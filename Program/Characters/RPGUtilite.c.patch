@@ -1,20 +1,18 @@
 #find
 				if (isOfficerInShip(GetCharacter(cn), true))
 				{
-					AddCharacterExpToSkill(GetCharacter(cn), _skill, iBonus * _addValue / div);
-				}
-				else
-				{
-					AddCharacterExpToSkill(GetCharacter(cn), _skill, iBonus * _addValue / div);
+					if (bShare) div = 2.0;
+					else div = 4.0;
 				}
 #replacewith
 				if (isOfficerInShip(GetCharacter(cn), true))
 				{
-					// Professional officers learn their own shipboard speciality at the
-					// player's full base XP rate. SharedExperience continues to govern
-					// the officer's share of unrelated skills.
-					bool bProfessionalSkill = false;
+					if (bShare) div = 2.0;
+					else div = 4.0;
 
+					// Assigned professional officers gain full XP in their own shipboard speciality.
+					// SharedExperience still controls their XP share for unrelated skills.
+					bool bProfessionalSkill = false;
 					switch (_skill)
 					{
 						case SKILL_SAILING:
@@ -23,42 +21,36 @@
 								bProfessionalSkill = true;
 							}
 						break;
-
 						case SKILL_ACCURACY:
 							if (CheckAttribute(pchar, "Fellows.Passengers.cannoner") && cn == sti(pchar.Fellows.Passengers.cannoner))
 							{
 								bProfessionalSkill = true;
 							}
 						break;
-
 						case SKILL_CANNONS:
 							if (CheckAttribute(pchar, "Fellows.Passengers.cannoner") && cn == sti(pchar.Fellows.Passengers.cannoner))
 							{
 								bProfessionalSkill = true;
 							}
 						break;
-
 						case SKILL_GRAPPLING:
 							if (CheckAttribute(pchar, "Fellows.Passengers.boatswain") && cn == sti(pchar.Fellows.Passengers.boatswain))
 							{
 								bProfessionalSkill = true;
 							}
 						break;
-
 						case SKILL_DEFENCE:
 							if (CheckAttribute(pchar, "Fellows.Passengers.doctor") && cn == sti(pchar.Fellows.Passengers.doctor))
 							{
 								bProfessionalSkill = true;
 							}
 						break;
-
 						case SKILL_REPAIR:
 							if (CheckAttribute(pchar, "Fellows.Passengers.carpenter") && cn == sti(pchar.Fellows.Passengers.carpenter))
 							{
 								bProfessionalSkill = true;
 							}
 						break;
-
 						case SKILL_COMMERCE:
 							if (CheckAttribute(pchar, "Fellows.Passengers.treasurer") && cn == sti(pchar.Fellows.Passengers.treasurer))
 							{
@@ -70,24 +62,12 @@
 					if (bProfessionalSkill)
 					{
 						div = 1.0;
-					}
 
-					float fOfficerXP = iBonus * _addValue / div;
-
-					// Minimal proof-of-operation logging:
-					// only sizeable XP awards to the officer responsible for that skill.
-					if (bProfessionalSkill)
-					{
+						// Proof-of-operation logging for sizeable professional XP awards.
 						if (_addValue >= 10.0)
 						{
-							trace("PROFESSIONAL_OFFICER_XP officer=" + characters[cn].id + " skill=" + _skill + " awarded=" + FloatToString(fOfficerXP, 2));
+							trace("PROFESSIONAL_OFFICER_XP officer=" + characters[cn].id + " skill=" + _skill + " awarded=" + FloatToString(iBonus * _addValue / div, 2));
 						}
 					}
-
-					AddCharacterExpToSkill(GetCharacter(cn), _skill, fOfficerXP);
-				}
-				else
-				{
-					AddCharacterExpToSkill(GetCharacter(cn), _skill, iBonus * _addValue / div);
 				}
 #endreplace
